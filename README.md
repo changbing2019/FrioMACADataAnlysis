@@ -14,7 +14,7 @@ notes:
        
        Section 3: Use the class to load the data for the Frio basin
   
-       Section 4:  Calculate annula mean and seasonal mean for precipitation and temperature at different time periods, different RCPs and zones (recahrge and contributing)
+       Section 4:  Calculate annul mean and seasonal mean for precipitation and temperature at different time periods, different RCPs and zones (recahrge and contributing)
  
         Section 5: Reformat the 4 data frames for visualizing with Seaborn module
         
