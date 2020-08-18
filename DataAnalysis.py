@@ -15,6 +15,9 @@ import seaborn as sns
 
 
 class Macadata:
+
+
+
     
     def __init__(self,basin,filepath,zone,rcp,iplot): #,monthlyP,monthlyT,dailyP,dailyT):
         self.basin=basin
@@ -117,6 +120,7 @@ class Macadata:
         pre19502005=pre_rch_month.loc['1950-01-01':'2005-12-31']
         pre19712000=pre_rch_month.loc['1971-01-01':'2000-12-31']
         pre20012009=pre_rch_month.loc['2001-01-01':'2009-12-31']
+        pre20202049=pre_rch_month.loc['2020-01-01':'2049-12-31']
         pre20102039=pre_rch_month.loc['2010-01-01':'2039-12-31']
         pre20402069=pre_rch_month.loc['2040-01-01':'2069-12-31']
         pre20702099=pre_rch_month.loc['2070-01-01':'2099-12-31']
@@ -130,19 +134,24 @@ class Macadata:
         annulmean19712000=pre19712000[macamodels].groupby('year').sum().mean()
         annulmean19502005=pre19502005[macamodels].groupby('year').sum().mean()
         annulmean20102039=pre20102039[macamodels].groupby('year').sum().mean()
+        annulmean20202049=pre20202049[macamodels].groupby('year').sum().mean()
         annulmean20402069=pre20402069[macamodels].groupby('year').sum().mean()
         annulmean20702099=pre20702099[macamodels].groupby('year').sum().mean()
         
-        anualmean=pd.concat([annulmean19712000,annulmean19502005,annulmean20102039,annulmean20402069,annulmean20702099],axis=1)
-        anualmean.columns=['1971-2000','1950-2005','2010-2039','2040-2069','2070-2099']
+        anualmean=pd.concat([annulmean19712000,annulmean19502005,annulmean20102039,
+                             annulmean20202049,annulmean20402069,annulmean20702099],axis=1)
+        anualmean.columns=['1971-2000','1950-2005','2010-2039','2020-2049',
+                           '2040-2069','2070-2099']
         
         seasonmean19712000=self.processseason(pre19712000,'1971-2000')
         seasonmean19502005=self.processseason(pre19502005,'1950-2005')
         seasonmean20102039=self.processseason(pre20102039,'2010-2039')
+        seasonmean20202049=self.processseason(pre20202049,'2020-2049')
         seasonmean20402069=self.processseason(pre20402069,'2040-2069')
         seasonmean20702099=self.processseason(pre20702099,'2070-2099')
         
-        seasonmean=pd.concat([seasonmean19712000,seasonmean19502005,seasonmean20102039,seasonmean20402069,seasonmean20702099],axis=0)
+        seasonmean=pd.concat([seasonmean19712000,seasonmean19502005,seasonmean20102039,
+                              seasonmean20202049,seasonmean20402069,seasonmean20702099],axis=0)
 
         return anualmean,seasonmean   # convert to inches
 
@@ -167,6 +176,7 @@ class Macadata:
         t19712000=t_rch_month.loc['1971-01-01':'2000-12-31']
         t20012009=t_rch_month.loc['2001-01-01':'2009-12-31']
         t20102039=t_rch_month.loc['2010-01-01':'2039-12-31']
+        t20202049=t_rch_month.loc['2020-01-01':'2049-12-31']
         t20402069=t_rch_month.loc['2040-01-01':'2069-12-31']
         t20702099=t_rch_month.loc['2070-01-01':'2099-12-31']
         
@@ -179,20 +189,24 @@ class Macadata:
         annulmean19712000=t19712000[macamodels].groupby('year').mean().mean()
         annulmean19502005=t19502005[macamodels].groupby('year').mean().mean()
         annulmean20102039=t20102039[macamodels].groupby('year').mean().mean()
+        annulmean20202049=t20202049[macamodels].groupby('year').mean().mean()
         annulmean20402069=t20402069[macamodels].groupby('year').mean().mean()
         annulmean20702099=t20702099[macamodels].groupby('year').mean().mean()
         
-        anualmean=pd.concat([annulmean19712000,annulmean19502005,annulmean20102039,annulmean20402069,annulmean20702099],axis=1)
-        anualmean.columns=['1971-2000','1950-2005','2010-2039','2040-2069','2070-2099']
+        anualmean=pd.concat([annulmean19712000,annulmean19502005,annulmean20102039,
+                             annulmean20202049,annulmean20402069,annulmean20702099],axis=1)
+        anualmean.columns=['1971-2000','1950-2005','2010-2039','2020-2049','2040-2069','2070-2099']
         
         
         seasonmean19712000=self.processseasonTempr(t19712000,'1971-2000')
         seasonmean19502005=self.processseasonTempr(t19502005,'1950-2005')
         seasonmean20102039=self.processseasonTempr(t20102039,'2010-2039')
+        seasonmean20202049=self.processseasonTempr(t20202049,'2020-2049')
         seasonmean20402069=self.processseasonTempr(t20402069,'2040-2069')
         seasonmean20702099=self.processseasonTempr(t20702099,'2070-2099')
         
-        seasonmean=pd.concat([seasonmean19712000,seasonmean19502005,seasonmean20102039,seasonmean20402069,seasonmean20702099],axis=0)
+        seasonmean=pd.concat([seasonmean19712000,seasonmean19502005,seasonmean20102039,
+                              seasonmean20202049,seasonmean20402069,seasonmean20702099],axis=0)
         #seasonmean.columns=['1971-2000','2010-2039','2040-2069','2070-2099']
        # seasonmean
         return anualmean,seasonmean   # convert to inches
@@ -221,9 +235,9 @@ class Macadata:
                 
                 df1.loc['1950-01-01':'1970-12-31'].plot(ax=ax[i,0],linestyle='-',color='b',label='1950-1970')
                 df1.loc['1971-01-01':'2000-12-31'].plot(ax=ax[i,0],linestyle='-',color='k',label='1971-2000')
-                df1.loc['2001-01-01':'2009-12-31'].plot(ax=ax[i,0],linestyle='-',color='grey',label='2001-2009')
-                df1.loc['2010-01-01':'2039-12-31'].plot(ax=ax[i,0],linestyle='-',color='r',label='2010-2039')
-                df1.loc['2040-01-01':'2069-12-31'].plot(ax=ax[i,0],linestyle='-',color='y',label='2040-2069')
+                df1.loc['2001-01-01':'2019-12-31'].plot(ax=ax[i,0],linestyle='-',color='grey',label='2001-2019')
+                df1.loc['2020-01-01':'2049-12-31'].plot(ax=ax[i,0],linestyle='-',color='r',label='2020-2049')
+                df1.loc['2050-01-01':'2069-12-31'].plot(ax=ax[i,0],linestyle='-',color='y',label='2050-2069')
                 df1.loc['2070-01-01':'2099-12-31'].plot(ax=ax[i,0],linestyle='-',color='g',label='2070-2099')    
                 ax[i,0].set_title(col1)
                # ax[i,0].plot(df1.index,df1.loc[:,'gradientboost'],label='Gradient boost')
@@ -233,9 +247,9 @@ class Macadata:
             
                 df2.loc['1950-01-01':'1970-12-31'].plot(ax=ax[i,1],linestyle='-',color='b',label='1950-1970')
                 df2.loc['1971-01-01':'2000-12-31'].plot(ax=ax[i,1],linestyle='-',color='k',label='1971-2000')
-                df2.loc['2001-01-01':'2009-12-31'].plot(ax=ax[i,1],linestyle='-',color='grey',label='2001-2009')
-                df2.loc['2010-01-01':'2039-12-31'].plot(ax=ax[i,1],linestyle='-',color='r',label='2010-2039')
-                df2.loc['2040-01-01':'2069-12-31'].plot(ax=ax[i,1],linestyle='-',color='y',label='2040-2069')
+                df2.loc['2001-01-01':'2019-12-31'].plot(ax=ax[i,1],linestyle='-',color='grey',label='2001-2019')
+                df2.loc['2020-01-01':'2049-12-31'].plot(ax=ax[i,1],linestyle='-',color='r',label='2020-2049')
+                df2.loc['2050-01-01':'2069-12-31'].plot(ax=ax[i,1],linestyle='-',color='y',label='2050-2069')
                 df2.loc['2070-01-01':'2099-12-31'].plot(ax=ax[i,1],linestyle='-',color='g',label='2070-2099')    
          #       ax[i,1].plot(df2.index,df2.loc[:,'gradientboost'],label='Gradient boost')
                 ax[i,1].legend(loc="best")
@@ -246,11 +260,11 @@ class Macadata:
     @staticmethod
     def calculatingseasonalmeanpercentage(df):
         ## to calculate percentage of the three periods to the baseline period
-        dfo=df[df['period']=='1971-2000']
+        dfo=df[df['period']=='1950-2005']
        # print(dfo)
         #dfp=df[df['period'].isin(['2010-2039','2040-2069','2070-2099'])]
         finaldf=pd.DataFrame()
-        for period in ['2010-2039','2040-2069','2070-2099']:
+        for period in ['2010-2039','2020-2049','2040-2069','2070-2099']:
             #dfp=df[df['period']==period]
             for rcp in ['rcp45','rcp85']:
                 for zone in ['Recharge Zone', 'Contributing Zone']:
@@ -288,11 +302,11 @@ class Macadata:
     @staticmethod
     def calculatingseasonalmeanpercentage(df):
         ## to calculate percentage of the three periods to the baseline period
-        dfo=df[df['period']=='1971-2000']
+        dfo=df[df['period']=='1950-2005']
        # print(dfo)
         #dfp=df[df['period'].isin(['2010-2039','2040-2069','2070-2099'])]
         finaldf=pd.DataFrame()
-        for period in ['2010-2039','2040-2069','2070-2099']:
+        for period in ['2010-2039','2020-2049','2040-2069','2070-2099']:
             #dfp=df[df['period']==period]
             for rcp in ['rcp45','rcp85']:
                 for zone in ['Recharge Zone', 'Contributing Zone']:
@@ -334,14 +348,17 @@ class Macadata:
         lst1=[]
         lst2=[]
         lst3=[]    
+        lst4=[]    
         for idx, row in df.iterrows():
-            lst1.append(row['2010-2039']/row['1971-2000']*100)
-            lst2.append(row['2040-2069']/row['1971-2000']*100)
-            lst3.append(row['2070-2099']/row['1971-2000']*100)
+            lst1.append(row['2010-2039']/row['1950-2005']*100)
+            lst2.append(row['2020-2049']/row['1950-2005']*100)
+            lst3.append(row['2040-2069']/row['1950-2005']*100)
+            lst4.append(row['2070-2099']/row['1950-2005']*100)
     
         df.loc[:,'2010-2039']=lst1
-        df.loc[:,'2040-2069']=lst2
-        df.loc[:,'2070-2099']=lst3
+        df.loc[:,'2020-2049']=lst2
+        df.loc[:,'2040-2069']=lst3
+        df.loc[:,'2070-2099']=lst4
         
         df=df.drop(['1971-2000','1950-2005'],axis=1)
     
