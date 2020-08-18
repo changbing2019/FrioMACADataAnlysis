@@ -22,10 +22,8 @@ class Macadata:
         self.zone=zone
         self.rcp=rcp
         self.iplot=iplot
-        self.monthlyP=pd.DataFrame()
-        self.monthlyT=pd.DataFrame()
-        self.dailyP=pd.DataFrame()
-        self.dailyT=pd.DataFrame()
+        self.monthlyP, self.monthlyT=self. obtain_monthlyData()
+        self.dailyP, self.dailyT=self.obtain_dailydata()
 
 
 
@@ -36,8 +34,7 @@ class Macadata:
 
          pathnew=os.path.join(self.filepath,'dataPre')
          self.dailyP=self.Concate_dailydata(pathnew) #,basin=self.basin,rcp=self.rcp,zone=self.zone)  ## daily data
-         
-        # return dailyP, dailyT 
+         return self.dailyP, self.dailyT 
 
          
 
@@ -87,7 +84,8 @@ class Macadata:
 
          if self.iplot is True:   
             self.drawplot_raw()    
-            
+        
+         return self.monthlyP,self.monthlyT   
         
     
     def drawplot_raw(self): # ,monthlyP, monthlyT):
@@ -244,3 +242,150 @@ class Macadata:
                 ax[i,1].set_title(col2)
                 ax[i,1].set_ylabel(ylabel)
     
+    
+    @staticmethod
+    def calculatingseasonalmeanpercentage(df):
+        ## to calculate percentage of the three periods to the baseline period
+        dfo=df[df['period']=='1971-2000']
+       # print(dfo)
+        #dfp=df[df['period'].isin(['2010-2039','2040-2069','2070-2099'])]
+        finaldf=pd.DataFrame()
+        for period in ['2010-2039','2040-2069','2070-2099']:
+            #dfp=df[df['period']==period]
+            for rcp in ['rcp45','rcp85']:
+                for zone in ['Recharge Zone', 'Contributing Zone']:
+                        
+                    tempdf=df[(df['period']==period) & (df['rcp']==rcp) & (df['zone']==zone)].loc[:,['Winter','Spring','Summer','Fall']] 
+                    tempdfo=dfo[(dfo['rcp']==rcp) & (dfo['zone']==zone)].loc[:,['Winter','Spring','Summer','Fall']] 
+                    tempdf.columns=['Winter_f','Spring_f','Summer_f','Fall_f']
+                    tempdfo.columns=['Winter_h','Spring_h','Summer_h','Fall_h']
+    #                print(tempdfo)
+                    tmdf=pd.concat([tempdf,tempdfo],axis=1)
+                   # print(tmdf.columns)
+                  #  print(tmdf)
+                    tmdf.loc[:,'Percent_winter']=tmdf.loc[:,'Winter_f']/tmdf.loc[:,'Winter_h']*100
+                    tmdf.loc[:,'Percent_spring']=tmdf.loc[:,'Spring_f']/tmdf.loc[:,'Spring_h']*100
+                    tmdf.loc[:,'Percent_summer']=tmdf.loc[:,'Summer_f']/tmdf.loc[:,'Summer_h']*100
+                    tmdf.loc[:,'Percent_fall']=tmdf.loc[:,'Fall_f']/tmdf.loc[:,'Fall_h']*100
+                    
+                    newdf=tmdf[['Percent_winter','Percent_spring','Percent_summer','Percent_fall']]  
+                   # print(newdf)
+                    newdf.loc[:,'period']=period
+                    newdf.loc[:,'rcp']=rcp
+                    newdf.loc[:,'zone']=zone
+                    if len(finaldf)==0:
+                        finaldf=newdf.copy()
+                    else:
+                        finaldf=pd.concat([finaldf,newdf],axis=0)
+                    #break
+                #break
+            
+            #break    
+        return finaldf 
+    
+    
+    
+    @staticmethod
+    def calculatingseasonalmeanpercentage(df):
+        ## to calculate percentage of the three periods to the baseline period
+        dfo=df[df['period']=='1971-2000']
+       # print(dfo)
+        #dfp=df[df['period'].isin(['2010-2039','2040-2069','2070-2099'])]
+        finaldf=pd.DataFrame()
+        for period in ['2010-2039','2040-2069','2070-2099']:
+            #dfp=df[df['period']==period]
+            for rcp in ['rcp45','rcp85']:
+                for zone in ['Recharge Zone', 'Contributing Zone']:
+                        
+                    tempdf=df[(df['period']==period) & (df['rcp']==rcp) & (df['zone']==zone)].loc[:,['Winter','Spring','Summer','Fall']] 
+                    tempdfo=dfo[(dfo['rcp']==rcp) & (dfo['zone']==zone)].loc[:,['Winter','Spring','Summer','Fall']] 
+                    tempdf.columns=['Winter_f','Spring_f','Summer_f','Fall_f']
+                    tempdfo.columns=['Winter_h','Spring_h','Summer_h','Fall_h']
+    #                print(tempdfo)
+                    tmdf=pd.concat([tempdf,tempdfo],axis=1)
+                   # print(tmdf.columns)
+                  #  print(tmdf)
+                    tmdf.loc[:,'Percent_winter']=tmdf.loc[:,'Winter_f']/tmdf.loc[:,'Winter_h']*100
+                    tmdf.loc[:,'Percent_spring']=tmdf.loc[:,'Spring_f']/tmdf.loc[:,'Spring_h']*100
+                    tmdf.loc[:,'Percent_summer']=tmdf.loc[:,'Summer_f']/tmdf.loc[:,'Summer_h']*100
+                    tmdf.loc[:,'Percent_fall']=tmdf.loc[:,'Fall_f']/tmdf.loc[:,'Fall_h']*100
+                    
+                    newdf=tmdf[['Percent_winter','Percent_spring','Percent_summer','Percent_fall']]  
+                   # print(newdf)
+                    newdf.loc[:,'period']=period
+                    newdf.loc[:,'rcp']=rcp
+                    newdf.loc[:,'zone']=zone
+                    if len(finaldf)==0:
+                        finaldf=newdf.copy()
+                    else:
+                        finaldf=pd.concat([finaldf,newdf],axis=0)
+                    #break
+                #break
+            
+            #break    
+        return finaldf
+
+
+    @staticmethod
+    
+    def calculatingannualmeanpercentage(dfo):
+        ## to calculate percentage of the three periods to the baseline period
+        df=dfo.copy()
+        lst1=[]
+        lst2=[]
+        lst3=[]    
+        for idx, row in df.iterrows():
+            lst1.append(row['2010-2039']/row['1971-2000']*100)
+            lst2.append(row['2040-2069']/row['1971-2000']*100)
+            lst3.append(row['2070-2099']/row['1971-2000']*100)
+    
+        df.loc[:,'2010-2039']=lst1
+        df.loc[:,'2040-2069']=lst2
+        df.loc[:,'2070-2099']=lst3
+        
+        df=df.drop(['1971-2000','1950-2005'],axis=1)
+    
+        return df    
+
+    @staticmethod
+    def reformattdataframevalues(preannualmean,tannualmean,preseasonmean,tseasonmean):
+    
+        preannualmean.index.name='macamodel'
+        preannualmean.reset_index(inplace=True)
+        preannualmean= preannualmean.melt(id_vars=['macamodel','rcp','zone'], var_name='period', value_name='annual mean P (in)')
+        tannualmean.index.name='macamodel'
+        tannualmean.reset_index(inplace=True)
+        tannualmean= tannualmean.melt(id_vars=['macamodel','rcp','zone'], var_name='period', value_name='annual mean T(oC)')
+        preseasonmean.index.name='macamodel'
+        preseasonmean.reset_index(inplace=True)
+        preseasonmean= preseasonmean.melt(id_vars=['macamodel','rcp','zone','period'], var_name='season', value_name='seasonal mean P (in)')
+        tseasonmean.index.name='macamodel'
+        tseasonmean.reset_index(inplace=True)
+        tseasonmean= tseasonmean.melt(id_vars=['macamodel','rcp','zone','period'], var_name='season', value_name='seasonal mean T (oC)')
+    
+    
+        return preannualmean,tannualmean,preseasonmean,tseasonmean
+
+
+    @staticmethod
+    def reformatdataframepercentage(percpreannualmean,perctannualmean,percpreseasonmean,perctseasonmean):
+    
+        percpreannualmean.index.name='macamodel'
+        percpreannualmean.reset_index(inplace=True)
+        percpreannualmean= percpreannualmean.melt(id_vars=['macamodel','rcp','zone'], var_name='period', value_name='annual mean P (%)')
+        perctannualmean.index.name='macamodel'
+        perctannualmean.reset_index(inplace=True)
+        perctannualmean= perctannualmean.melt(id_vars=['macamodel','rcp','zone'], var_name='period', value_name='annual mean T (%)')
+        percpreseasonmean.index.name='macamodel'
+        percpreseasonmean.reset_index(inplace=True)
+        percpreseasonmean= percpreseasonmean.melt(id_vars=['macamodel','rcp','zone','period'], var_name='season', value_name='seasonal mean P (%)')
+        perctseasonmean.index.name='macamodel'
+        perctseasonmean.reset_index(inplace=True)
+        perctseasonmean= perctseasonmean.melt(id_vars=['macamodel','rcp','zone','period'], var_name='season', value_name='seasonal mean T (%)')
+        
+        return percpreannualmean,perctannualmean,percpreseasonmean,perctseasonmean
+        
+
+
+
+        
